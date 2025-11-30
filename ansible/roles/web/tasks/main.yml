@@ -1,0 +1,51 @@
+- name: Install Nginx and PHP-FPM
+  apt:
+    name:
+      - nginx
+      - "php{{ php_version }}-fpm"
+      - "php{{ php_version }}-mysql"
+    state: present
+
+- name: Remove default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Create web root
+  file:
+    path: "{{ web_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+    recurse: true
+
+- name: Deploy application index
+  template:
+    src: index.php.j2
+    dest: "{{ web_root }}/{{ app_index }}"
+    owner: www-data
+    group: www-data
+    mode: "0644"
+
+- name: Deploy Nginx site configuration
+  template:
+    src: nginx_site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ nginx_site_name }}.conf"
+    mode: "0644"
+
+- name: Enable Nginx site
+  file:
+    src: "/etc/nginx/sites-available/{{ nginx_site_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ nginx_site_name }}.conf"
+    state: link
+    force: true
+
+- name: Ensure services are running
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - nginx
+    - "php{{ php_version }}-fpm"

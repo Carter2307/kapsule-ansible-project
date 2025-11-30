@@ -1,0 +1,7 @@
+- name: Create application config with database credentials
+  template:
+    src: config.php.j2
+    dest: "{{ web_root }}/config.php"
+    owner: www-data
+    group: www-data
+    mode: "0640"

@@ -1,0 +1,19 @@
+---
+- name: Configure web servers
+  hosts: webservers
+  become: true
+  vars_files:
+    - group_vars/all/vault.yml
+  roles:
+    - role: common
+    - role: web
+    - role: app
+
+- name: Configure database servers
+  hosts: dbservers
+  become: true
+  vars_files:
+    - group_vars/all/vault.yml
+  roles:
+    - role: common
+    - role: db

@@ -1,0 +1,3 @@
+nginx_site_name: kapsulekorp
+php_fpm_pool: www
+listen_port: 80

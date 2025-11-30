@@ -1,0 +1,10 @@
+php_version: "8.1"
+web_root: /var/www/kapsulekorp
+server_name: "{{ inventory_hostname }}"
+app_index: index.php
+
+mysql_root_user: root
+mysql_root_password: "{{ vault_mysql_root_password }}"
+mysql_app_db: kapsulekorp
+mysql_app_user: kapsule
+mysql_app_password: "{{ vault_mysql_app_password }}"

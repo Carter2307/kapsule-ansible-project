@@ -1,0 +1,19 @@
+server {
+    listen {{ listen_port }};
+    server_name {{ server_name }};
+
+    root {{ web_root }};
+    index {{ app_index }};
+
+    location / {
+        try_files $uri $uri/ /{{ app_index }}?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php{{ php_version }}-fpm.sock;
+    }
+
+    access_log /var/log/nginx/{{ nginx_site_name }}.access.log;
+    error_log /var/log/nginx/{{ nginx_site_name }}.error.log;
+}

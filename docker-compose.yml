@@ -1,0 +1,78 @@
+services:
+  staging-web-1:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${STAGING_KEY}"
+    container_name: staging-web-1
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.11
+
+  staging-web-2:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${STAGING_KEY}"
+    container_name: staging-web-2
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.12
+
+  staging-db-1:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${STAGING_KEY}"
+    container_name: staging-db-1
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.13
+
+  prod-web-1:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${PROD_KEY}"
+    container_name: prod-web-1
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.21
+
+  prod-web-2:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${PROD_KEY}"
+    container_name: prod-web-2
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.22
+
+  prod-web-3:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${PROD_KEY}"
+    container_name: prod-web-3
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.23
+
+  prod-db-1:
+    build:
+      context: .
+      args:
+        SSH_PUB_KEY: "${PROD_KEY}"
+    container_name: prod-db-1
+    networks:
+      ansible_net:
+        ipv4_address: 192.168.56.24
+
+networks:
+  ansible_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.56.0/24
+          gateway: 192.168.56.1

@@ -1,0 +1,3 @@
+mysql_bind_address: "0.0.0.0"
+mysql_listen_port: 3306
+mysql_socket: /var/run/mysqld/mysqld.sock

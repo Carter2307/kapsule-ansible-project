@@ -1,0 +1,73 @@
+- name: Install MySQL server
+  apt:
+    name:
+      - mysql-server
+    state: present
+    update_cache: true
+
+- name: Configure MySQL to listen on all interfaces
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = {{ mysql_bind_address }}'
+    backup: yes
+
+- name: Ensure MySQL run directory exists
+  file:
+    path: /var/run/mysqld
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'
+
+- name: Check if MySQL is running
+  shell: pgrep -x mysqld
+  register: mysql_running
+  failed_when: false
+  changed_when: false
+
+- name: Start MySQL manually in background
+  shell: nohup sudo -u mysql mysqld > /var/log/mysql-startup.log 2>&1 &
+  when: mysql_running.rc != 0
+  changed_when: true
+
+- name: Wait for MySQL socket
+  wait_for:
+    path: "{{ mysql_socket }}"
+    delay: 2
+    timeout: 60
+    msg: "MySQL socket did not appear in time"
+
+- name: Wait for MySQL port
+  wait_for:
+    port: 3306
+    delay: 1
+    timeout: 30
+    msg: "MySQL port 3306 not available"
+
+- name: Set root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    check_implicit_admin: true
+    state: present
+
+- name: Create app database
+  mysql_db:
+    name: "{{ mysql_app_db }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    state: present
+
+- name: Create app user
+  mysql_user:
+    name: "{{ mysql_app_user }}"
+    password: "{{ mysql_app_password }}"
+    host: "%"
+    priv: "{{ mysql_app_db }}.*:ALL"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    state: present
