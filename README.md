@@ -9,12 +9,10 @@ Projet de déploiement d'une stack LEMP pour deux environnements (staging et pro
 - `ansible/group_vars/all/vault.yml` : secrets à chiffrer avec Ansible Vault.
 - `ansible/site.yml` : playbook principal.
 - `ansible/roles/` : rôles `common`, `web`, `app`, `db`.
-- `terraform/` : code Terraform bonus (VirtualBox) + génération d'inventaire.
 
 ## Prérequis
 - Ansible >= 2.9 et accès SSH par clé sur les hôtes Ubuntu 22.04.
 - Python 3 présent sur les cibles.
-- (Bonus) Terraform >= 1.0, VirtualBox installé, provider `terra-farm/virtualbox`.
 
 ## Utilisation (Ansible)
 1. Cloner le dépôt puis se placer dans `ansible/`.
@@ -38,19 +36,3 @@ Projet de déploiement d'une stack LEMP pour deux environnements (staging et pro
 Variables clés (dans `group_vars/all/main.yml`) :
 - `php_version`, `web_root`, `server_name`, `mysql_app_db`, `mysql_app_user`, `mysql_root_password` (secret), `mysql_app_password` (secret).
 
-## Bonus Terraform (VirtualBox)
-> Les valeurs par défaut créent 2 web + 1 DB en staging, 3 web + 1 DB en prod. Adaptez les ressources à votre machine.
-
-1. Aller dans `terraform/`.
-2. Ajuster `variables.tf` (image, CPU, RAM, counts, réseau).
-3. Initialiser et appliquer :
-   ```bash
-   terraform init
-   terraform apply
-   ```
-   Cela crée les VMs VirtualBox et génère `../ansible/inventory.ini` à partir du template `inventory.tpl`.
-
-## Notes
-- Chiffrez toujours `group_vars/all/vault.yml` avant un push ou une démo.
-- Les tâches MySQL supposent le socket `/var/run/mysqld/mysqld.sock` (Ubuntu 22.04).
-- La page d'accueil est servie depuis `{{ web_root }}/index.php` et lit `config.php` avec les credentials DB.
